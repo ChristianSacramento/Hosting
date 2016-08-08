@@ -82,14 +82,31 @@ namespace Microsoft.AspNetCore.Server.Testing
 
         protected void CleanPublishedOutput()
         {
-            try
+            var deletePublishedFolderEnvironmentVariableName = "DELETE_PUBLISHED_FOLDER";
+            var deleteLocallyPublishedFolder = true;
+            var setting = Environment.GetEnvironmentVariable(deletePublishedFolderEnvironmentVariableName);
+            if (string.Equals(setting, "false", StringComparison.OrdinalIgnoreCase))
             {
-                // We've originally published the application in a temp folder. We need to delete it.
-                Directory.Delete(DeploymentParameters.PublishedApplicationRootPath, true);
+                deleteLocallyPublishedFolder = false;
             }
-            catch (Exception exception)
+
+            if (deleteLocallyPublishedFolder)
             {
-                Logger.LogWarning($"Failed to delete directory : {exception.Message}");
+                try
+                {
+                    // We've originally published the application in a temp folder. We need to delete it.
+                    Directory.Delete(DeploymentParameters.PublishedApplicationRootPath, true);
+                }
+                catch (Exception exception)
+                {
+                    Logger.LogWarning($"Failed to delete directory : {exception.Message}");
+                }
+            }
+            else
+            {
+                Logger.LogWarning(
+                    "Skipping deleting the locally published folder as environment variable " +
+                    $"'{deletePublishedFolderEnvironmentVariableName}' is set to '{deleteLocallyPublishedFolder}'.");
             }
         }
 
