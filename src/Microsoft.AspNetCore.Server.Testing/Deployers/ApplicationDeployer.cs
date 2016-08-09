@@ -82,15 +82,7 @@ namespace Microsoft.AspNetCore.Server.Testing
 
         protected void CleanPublishedOutput()
         {
-            var deletePublishedFolderEnvironmentVariableName = "DELETE_PUBLISHED_FOLDER";
-            var deleteLocallyPublishedFolder = true;
-            var setting = Environment.GetEnvironmentVariable(deletePublishedFolderEnvironmentVariableName);
-            if (string.Equals(setting, "false", StringComparison.OrdinalIgnoreCase))
-            {
-                deleteLocallyPublishedFolder = false;
-            }
-
-            if (deleteLocallyPublishedFolder)
+            if (DeploymentParameters.DeletePublishedApplicationOnDispose)
             {
                 try
                 {
@@ -105,8 +97,8 @@ namespace Microsoft.AspNetCore.Server.Testing
             else
             {
                 Logger.LogWarning(
-                    "Skipping deleting the locally published folder as environment variable " +
-                    $"'{deletePublishedFolderEnvironmentVariableName}' is set to '{deleteLocallyPublishedFolder}'.");
+                    "Skipping deleting the locally published folder as property " +
+                    $"'{nameof(DeploymentParameters.DeletePublishedApplicationOnDispose)}' is set to 'true'.");
             }
         }
 
